@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EIC Activity Quiz-2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #172637;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .quiz-container {
+            background-color: #675656;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #985e9b;
+            color: rgb(220, 183, 183);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #597a9d;
+        }
+
+        .results, .rank {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .rank {
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>EIC Activity Quiz-2</h1>
+        <div id="quiz-section">
+            <button class="startButton" onclick="startQuiz()">Start Quizs</button>
+        </div>
+        <div id="quizForm"></div>
+       
+        <div id="results" class="results"></div>
+        <div id="rank" class="rank"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize quiz questions
+            const questions = [
+                { question: "What is my name?", options: ["A. Vedant", "B. Madrid", "C. Paris","D.Goat"], correctAnswer: "C" },
+                { question: "What is 2 + 2?", options: ["A. 3", "B. 4", "C. 5","D.6"], correctAnswer: "B" }
+            ];
+
+            // Start quiz function
+            function startQuiz() {
+                document.querySelector('startButton').style.display = 'none'; // Hide start button
+                document.getElementById('submitBtn').style.display = 'block'; // Show submit button
+                renderQuiz(questions);
+            }
+
+            // Function to render the quiz
+            function renderQuiz(questions) {
+                const quizForm = document.getElementById('quizForm');
+                quizForm.innerHTML = ''; // Clear any existing content
+
+                questions.forEach((questionObj, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'question';
+                    const questionParagraph = document.createElement('p');
+                    questionParagraph.textContent = ${index + 1}. ${questionObj.question};
+                    questionDiv.appendChild(questionParagraph);
+
+                    questionObj.options.forEach(option => {
+                        const label = document.createElement('label');
+                        const radio = document.createElement('input');
+                        radio.type = 'radio';
+                        radio.name = q${index + 1};
+                        radio.value = option.split(".")[0]; // A, B, C, etc.
+
+                        label.appendChild(radio);
+                        label.appendChild(document.createTextNode(option));
+                        questionDiv.appendChild(label);
+                        questionDiv.appendChild(document.createElement('br'));
+                    });
+
+                    quizForm.appendChild(questionDiv);
+                });
+            }
+
+            // Event listener for the submit button
+            document.getElementById('submitBtn').addEventListener('click', function() {
+                // Prevent reattempt
+                if (localStorage.getItem('quizAttempted')) {
+                    alert('You have already attempted this quiz.');
+                    return;
+                }
+
+                let score = calculateScore(questions);
+                let totalQuestions = questions.length;
+                let rank = calculateRank(score, totalQuestions); // Assume rank is calculated out of 9 groups
+                showResults(score, totalQuestions);
+                showRank(rank);
+
+                // Save to prevent reattempt
+                localStorage.setItem('quizAttempted', true);
+            });
+
+            // Function to calculate score
+            function calculateScore(questions) {
+                let score = 0;
+
+                questions.forEach((questionObj, index) => {
+                    const selectedAnswer = document.querySelector(input[name="q${index + 1}"]:checked);
+                    if (selectedAnswer && selectedAnswer.value === questionObj.correctAnswer) {
+                        score++;
+                    }
+                });
+
+                return score;
+            }
+
+            // Function to show results
+            function showResults(score, totalQuestions) {
+                document.getElementById('results').innerText = You scored ${score} out of ${totalQuestions}.;
+            }
+
+            // Function to calculate rank (mock logic)
+            function calculateRank(score, totalQuestions) {
+                // Mock rank calculation (this can be replaced with actual logic)
+                let rank = Math.floor((totalQuestions - score) / totalQuestions * 9) + 1;
+                return rank;
+            }
+  // Function to show rank to the organizer
+            function showRank(rank) {
+                const rankDiv = document.getElementById('rank');
+                rankDiv.innerText = Your rank is: ${rank} out of 9 groups.;
+                rankDiv.style.display = 'block'; // Show the rank to the organizer
+            }
+
+            // Expose startQuiz function to be callable from the button click
+            window.startQuiz = startQuiz;
+        });
+    </script>
+</body>
+</html>
